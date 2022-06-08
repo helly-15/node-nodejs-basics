@@ -1,4 +1,5 @@
 import * as readline from "readline";
+import {inputSwitch} from "./input-switch/inputSwitch.js";
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -8,10 +9,11 @@ let userNameArgv = process.argv.slice(3)[0];
 let userName = userNameArgv.substring(userNameArgv.indexOf('=') + 1);
 console.log(`Welcome to the File Manager, ${userName}`)
 
+rl.on('line', (input) => {
+    inputSwitch(input, rl, userName)
+});
 
-// rl.question('What do you think of Node.js? ', (answer) => {
-//     // TODO: Log the answer in a database
-//     console.log(`Thank you for your valuable feedback: ${answer}`);
-//
-//    // rl.close();
-// });
+rl.on('SIGINT', () => {
+    console.log(`Thank you for using File Manager, ${userName}`)
+    rl.close();
+});
