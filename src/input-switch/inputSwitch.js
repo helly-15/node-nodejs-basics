@@ -57,6 +57,26 @@ export async function inputSwitch(inputData, rl, userName) {
             };
             await readFile();
             break;
+        case 'add':
+            const createFile = async () => {
+                try {
+                     await fs.writeFile('fileToWrite.txt', ' ')
+                } catch (err) {
+                    console.log('Operation failed')
+                }
+            };
+            await createFile();
+            break;
+        case 'rm':
+            const renameFile = async () => {
+                try {
+                    await fs.rename(inputData.split(' ')[1], inputData.split(' ')[2])
+                } catch (err) {
+                    console.log('Operation failed')
+                }
+            };
+            await renameFile();
+            break;
         default:
             console.log(`Invalid input`)
 
