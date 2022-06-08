@@ -7,11 +7,19 @@
 
 import fs from 'fs/promises';
 
-export async function inputSwitch(inputData, rl, userName) {
-    let inputDataforSwitch = inputData;
-    if (inputData.includes('cd ')) inputDataforSwitch = 'cd'
+const possibleCommands = ['cd', 'cat', 'add', 'rn', 'cp', 'mv', 'rm', 'os', 'hash', 'compress', 'decompress']
 
-    switch (inputDataforSwitch) {
+export async function inputSwitch(inputData, rl, userName) {
+    let inputDataForSwitch = inputData;
+
+    possibleCommands.forEach(command => {
+            if (inputData.startsWith(command)) {
+                inputDataForSwitch = command
+            }
+        }
+    )
+
+    switch (inputDataForSwitch) {
         case '.exit':
             console.log(`Thank you for using File Manager, ${userName}`)
             rl.close();
@@ -23,18 +31,31 @@ export async function inputSwitch(inputData, rl, userName) {
             console.log(process.cwd())
             break;
         case 'cd':
-            process.chdir(inputData.slice(3));
+            process.chdir(inputData.split(' ')[1]);
+            console.log(inputData)
+            console.log(inputData.split(' ')[1])
             break;
         case 'ls':
             const readFilesInDir = async () => {
-                try{
+                try {
                     const filesInDir = await fs.readdir(process.cwd())
-                    console.log (filesInDir)
+                    console.log(filesInDir)
                 } catch (err) {
-                    console.log ('Operation failed')
+                    console.log('Operation failed')
                 }
             };
             await readFilesInDir();
+            break;
+        case 'cat':
+            const readFile = async () => {
+                try {
+                    const fileContent = await fs.readFile(inputData.split(' ')[1],'utf-8')
+                    console.log(fileContent)
+                } catch (err) {
+                    console.log('Operation failed: file does not exist')
+                }
+            };
+            await readFile();
             break;
         default:
             console.log(`Invalid input`)
