@@ -18,7 +18,8 @@ export async function inputSwitch(inputData, rl, userName) {
             }
         }
     )
-
+    let sourcePath = inputData.split(' ')[1];
+    let targetPath = inputData.split(' ')[2];
     switch (inputDataForSwitch) {
         case '.exit':
             console.log(`Thank you for using File Manager, ${userName}`)
@@ -31,9 +32,9 @@ export async function inputSwitch(inputData, rl, userName) {
             console.log(process.cwd())
             break;
         case 'cd':
-            process.chdir(inputData.split(' ')[1]);
+            process.chdir(sourcePath);
             console.log(inputData)
-            console.log(inputData.split(' ')[1])
+            console.log(sourcePath)
             break;
         case 'ls':
             const readFilesInDir = async () => {
@@ -49,7 +50,7 @@ export async function inputSwitch(inputData, rl, userName) {
         case 'cat':
             const readFile = async () => {
                 try {
-                    const fileContent = await fs.readFile(inputData.split(' ')[1],'utf-8')
+                    const fileContent = await fs.readFile(sourcePath, 'utf-8')
                     console.log(fileContent)
                 } catch (err) {
                     console.log('Operation failed: file does not exist')
@@ -60,7 +61,7 @@ export async function inputSwitch(inputData, rl, userName) {
         case 'add':
             const createFile = async () => {
                 try {
-                     await fs.writeFile('fileToWrite.txt', ' ')
+                    await fs.writeFile('fileToWrite.txt', ' ')
                 } catch (err) {
                     console.log('Operation failed')
                 }
@@ -70,13 +71,24 @@ export async function inputSwitch(inputData, rl, userName) {
         case 'rm':
             const renameFile = async () => {
                 try {
-                    await fs.rename(inputData.split(' ')[1], inputData.split(' ')[2])
+                    await fs.rename(sourcePath, targetPath)
                 } catch (err) {
                     console.log('Operation failed')
                 }
             };
             await renameFile();
             break;
+        case 'cp':
+            const copyFile = async () => {
+                try {
+                        await fs.copyFile(sourcePath, targetPath);
+                } catch (err) {
+                    console.log('Operation failed')
+                }
+            };
+            await copyFile();
+            break;
+
         default:
             console.log(`Invalid input`)
 
