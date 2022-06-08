@@ -5,9 +5,9 @@
 // const __filename = fileURLToPath(import.meta.url);
 // const __dirname = dirname(__filename);
 
-import * as fs from "fs";
+import fs from 'fs/promises';
 
-export function inputSwitch(inputData, rl, userName) {
+export async function inputSwitch(inputData, rl, userName) {
     let inputDataforSwitch = inputData;
     if (inputData.includes('cd ')) inputDataforSwitch = 'cd'
 
@@ -26,10 +26,15 @@ export function inputSwitch(inputData, rl, userName) {
             process.chdir(inputData.slice(3));
             break;
         case 'ls':
-                fs.readdir(process.cwd(),(err, files)=>{
-                    if (err) console.log ('Operation failed')
-                    console.log(files)
-                });
+            const readFilesInDir = async () => {
+                try{
+                    const filesInDir = await fs.readdir(process.cwd())
+                    console.log (filesInDir)
+                } catch (err) {
+                    console.log ('Operation failed')
+                }
+            };
+            await readFilesInDir();
             break;
         default:
             console.log(`Invalid input`)
