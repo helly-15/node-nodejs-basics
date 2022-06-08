@@ -68,7 +68,7 @@ export async function inputSwitch(inputData, rl, userName) {
             };
             await createFile();
             break;
-        case 'rm':
+        case 'rn':
             const renameFile = async () => {
                 try {
                     await fs.rename(sourcePath, targetPath)
@@ -81,12 +81,34 @@ export async function inputSwitch(inputData, rl, userName) {
         case 'cp':
             const copyFile = async () => {
                 try {
-                        await fs.copyFile(sourcePath, targetPath);
+                    await fs.copyFile(sourcePath, targetPath);
                 } catch (err) {
                     console.log('Operation failed')
                 }
             };
             await copyFile();
+            break;
+
+        case 'mv':
+            const moveFile = async () => {
+                try {
+                    await fs.copyFile(sourcePath, targetPath);
+                    await fs.rm(sourcePath);
+                } catch (err) {
+                    console.log('Operation failed')
+                }
+            };
+            await moveFile();
+            break;
+        case 'rm':
+            const removeFile = async () => {
+                try {
+                    await fs.rm(sourcePath);
+                } catch (err) {
+                    console.log('Operation failed')
+                }
+            };
+            await removeFile();
             break;
 
         default:
