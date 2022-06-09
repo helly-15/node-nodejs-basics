@@ -1,6 +1,7 @@
 import * as readline from "readline";
 import {inputSwitch} from "./input-switch/inputSwitch.js";
-
+import os from "os";
+process.chdir(os.homedir());
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout

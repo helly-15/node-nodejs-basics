@@ -3,12 +3,12 @@ import {osOperations} from "../os-operations/osOperations.js";
 import * as zlib from "zlib";
 import {createWriteStream, createReadStream} from 'fs';
 import {pipeline} from "stream";
+import os from "os";
 
 const possibleCommands = ['cd', 'cat', 'add', 'rn', 'cp', 'mv', 'rm', 'os', 'hash', 'compress', 'decompress']
 
 export async function inputSwitch(inputData, rl, userName) {
     let inputDataForSwitch = inputData;
-
     possibleCommands.forEach(command => {
             if (inputData.startsWith(command)) {
                 inputDataForSwitch = command
@@ -18,8 +18,6 @@ export async function inputSwitch(inputData, rl, userName) {
     let sourcePath = inputData.split(' ')[1];
     let targetPath = inputData.split(' ')[2];
 
-    const sourceReadStrim = createReadStream(sourcePath);
-    const destinationWriteStream = createWriteStream(targetPath);
     switch (inputDataForSwitch) {
         case '.exit':
             console.log(`Thank you for using File Manager, ${userName}`)
@@ -133,6 +131,8 @@ export async function inputSwitch(inputData, rl, userName) {
             break;
 
         case 'compress':
+            const sourceReadStrim = createReadStream(sourcePath);
+            const destinationWriteStream = createWriteStream(targetPath);
             const brot = zlib.createBrotliCompress();
             pipeline(sourceReadStrim, brot, destinationWriteStream, (err) => {
                 if (err) {
@@ -141,8 +141,10 @@ export async function inputSwitch(inputData, rl, userName) {
             });
             break;
         case 'decompress':
+            const sourceReadStrimDec = createReadStream(sourcePath);
+            const destinationWriteStreamDec = createWriteStream(targetPath);
             const brotDecompress = zlib.createBrotliDecompress();
-            pipeline(sourceReadStrim, brotDecompress, destinationWriteStream, (err) => {
+            pipeline(sourceReadStrimDec, brotDecompress, destinationWriteStreamDec, (err) => {
                 if (err) {
                     console.error('Operation failed:', err);
                 }
@@ -150,7 +152,7 @@ export async function inputSwitch(inputData, rl, userName) {
             break;
 
         default:
-            console.log(`Invalid input`)
+                console.log(`Invalid input`)
     }
     if (inputData !== '.exit') console.log(`You are currently in ${process.cwd()}`)
 }
