@@ -6,6 +6,7 @@
 // const __dirname = dirname(__filename);
 
 import fs from 'fs/promises';
+import {osOperations} from "../os-operations/osOperations.js";
 
 const possibleCommands = ['cd', 'cat', 'add', 'rn', 'cp', 'mv', 'rm', 'os', 'hash', 'compress', 'decompress']
 
@@ -110,7 +111,14 @@ export async function inputSwitch(inputData, rl, userName) {
             };
             await removeFile();
             break;
+        case 'os':
+            try {
+                osOperations(sourcePath);
+            } catch (err) {
+                console.log('Operation failed')
+            }
 
+            break;
         default:
             console.log(`Invalid input`)
 
