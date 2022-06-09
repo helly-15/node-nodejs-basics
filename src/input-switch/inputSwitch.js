@@ -1,12 +1,8 @@
-// import * as path from "path";
-// import {fileURLToPath} from "url";
-// import {dirname} from "path";
-//
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = dirname(__filename);
-
 import fs from 'fs/promises';
 import {osOperations} from "../os-operations/osOperations.js";
+import * as zlib from "zlib";
+import {createWriteStream, createReadStream} from 'fs';
+import {pipeline} from "stream";
 
 const possibleCommands = ['cd', 'cat', 'add', 'rn', 'cp', 'mv', 'rm', 'os', 'hash', 'compress', 'decompress']
 
@@ -21,6 +17,9 @@ export async function inputSwitch(inputData, rl, userName) {
     )
     let sourcePath = inputData.split(' ')[1];
     let targetPath = inputData.split(' ')[2];
+
+    const sourceReadStrim = createReadStream(sourcePath);
+    const destinationWriteStream = createWriteStream(targetPath);
     switch (inputDataForSwitch) {
         case '.exit':
             console.log(`Thank you for using File Manager, ${userName}`)
@@ -117,11 +116,41 @@ export async function inputSwitch(inputData, rl, userName) {
             } catch (err) {
                 console.log('Operation failed')
             }
-
             break;
+        case 'hash':
+            const {createHash} = await import('crypto');
+            try {
+                const calchash = async () => {
+                    const hash = createHash('sha256');
+                    const data = await fs.readFile(sourcePath, "utf8");
+                    hash.update(Buffer.from(data));
+                    return hash.copy().digest('hex')
+                }
+                console.log(await calchash());
+            } catch (err) {
+                console.log('Operation failed')
+            }
+            break;
+
+        case 'compress':
+            const brot = zlib.createBrotliCompress();
+            pipeline(sourceReadStrim, brot, destinationWriteStream, (err) => {
+                if (err) {
+                    console.error('Operation failed:', err);
+                }
+            });
+            break;
+        case 'decompress':
+            const brotDecompress = zlib.createBrotliDecompress();
+            pipeline(sourceReadStrim, brotDecompress, destinationWriteStream, (err) => {
+                if (err) {
+                    console.error('Operation failed:', err);
+                }
+            });
+            break;
+
         default:
             console.log(`Invalid input`)
-
     }
     if (inputData !== '.exit') console.log(`You are currently in ${process.cwd()}`)
 }
